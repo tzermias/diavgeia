@@ -7,6 +7,7 @@ from time import sleep
 from scrapy import log
 from scrapy.xlib.pydispatch import dispatcher
 from scrapy import signals
+from scrapy.stats import stats
 import datetime, dateutil.parser
 
 class DownloaderPipeline(object):
@@ -22,6 +23,7 @@ class DownloaderPipeline(object):
         self.spider = ""
         self.lock = RLock()
         self.settings = settings
+        self.stats = stats
         dispatcher.connect(self.spider_closed, signals.spider_closed)
 
         # Instantiate Threads
@@ -58,6 +60,9 @@ class DownloaderPipeline(object):
             try:
                 urllib.urlretrieve(url, "%s/%s/%s.pdf" % (self.settings['DOWNLOAD_DIR'],
                     item[2], item[0]))
+                #Increment a threadsafe counter here...
+                with self.lock:
+                    self.stats.inc_value('ThreadedDownloader/files_downloaded')
 
             except IOError as e:
                 log.err(e)
