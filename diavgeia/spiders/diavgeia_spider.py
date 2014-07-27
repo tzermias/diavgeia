@@ -32,8 +32,8 @@ class DiavgeiaSpider(BaseSpider):
             for element in decision.select("*"):
                 #TODO: This handles only elements with no children
                 name = element.select("name(.)").extract()[0]
-                if len (element.select("//xmlns:%s/text()" % name)) !=0:
-                    value = element.select("//xmlns:%s/text()" % name).extract()[0]
+                if len (element.select("./text()" )) != 0:
+                    value = element.select("./text()").extract()[0]
                     d[name] = value
             yield d
 

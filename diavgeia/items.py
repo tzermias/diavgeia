@@ -1,11 +1,31 @@
-# Define here the models for your scraped items
 #
-# See documentation in:
-# http://doc.scrapy.org/topics/items.html
+# items.py
+#
+# Define the structure of a DiavgeiaItem
 
 from scrapy.item import Item, Field
 
 class DiavgeiaItem(Item):
-    # define the fields for your item here like:
-    # name = Field()
-    pass
+    ada = Field()
+    protocolNumber = Field()
+    subject = Field()
+    decisionTypeId = Field()
+    organizationId = Field()
+    #unitIds = Field()
+    signerIds = Field()
+    thematicCategoryIds = Field()
+    privateDate = Field()
+    submissionTimestamp = Field()
+    status = Field()
+    versionId= Field()
+    documentChecksum = Field()
+    #attachments = Field()
+    #extraFieldValues = Field()
+    correctedVersionId = Field()
+    issueDate = Field()
+    url = Field()
+    documentUrl= Field()
+    privateData = Field()
+
+    
+# vi: ts=4 sts=4 et sw=4 tw=80
