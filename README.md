@@ -34,16 +34,23 @@ that are configurable are the following:
 Run Diavgeia
 ------------
 Diavgeia can be run using the following command: 
-`scrapy crawl diavgeia_spider`
+
+    scrapy crawl diavgeia_spider
+    
 The above command fetches decision documents that were submitted to Diavgeia the previous 
 day. Queries can be performed to Diavgeia using search arguments defined by the API.
 Such arguments can be passed to the crawler with the `-a` flag. 
 e.g: If we wish to search every decision published by an organization we can use the 
-following command: `scrapy crawl diavgeia_spider -a org=30` where 30 is the organization ID.
+following command: 
+
+    scrapy crawl diavgeia_spider -a org=30
+    
+where 30 is the organization ID.
 Diavgeia allows us to request an organization using its name as well.
 
 Allowed arguments for the spider are depicted on the following table:
 
+------------|---------------------------------
 | `ada`			| Unique decision ID
 | `org`			| ID or latin name of organization
 | `subject`	| Subject of the decision
