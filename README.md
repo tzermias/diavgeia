@@ -44,19 +44,19 @@ Diavgeia allows us to request an organization using its name as well.
 
 Allowed arguments for the spider are depicted on the following table:
 
-`ada`			| Unique decision ID
-`org`			| ID or latin name of organization
-`subject`		| Subject of the decision
-`protocol`		| Protocol number
-`term`			| General search term
-`unit`			| Unit ID 
-`signer`		| Signer ID
-`type`			| Type of decisions
-`tag`			| Category tag
-`from_date`		| From submission date (in YYYY-MM-DD format)
-`to_date`		| To submission date (in YYYY-MM-DD format)
-`from_issue_date`	| From issue date (in YYYY-MM-DD format)
-`status`		| To issue date (in YYYY-MM-DD format)
-`size`			| Results size.
+| `ada`			| Unique decision ID
+| `org`			| ID or latin name of organization
+| `subject`	| Subject of the decision
+| `protocol`	| Protocol number
+| `term`			| General search term
+| `unit`			| Unit ID 
+| `signer`		| Signer ID
+| `type`			| Type of decisions
+| `tag`			| Category tag
+| `from_date`		| From submission date (in YYYY-MM-DD format)
+| `to_date`		| To submission date (in YYYY-MM-DD format)
+| `from_issue_date`	| From issue date (in YYYY-MM-DD format)
+| `status`		| To issue date (in YYYY-MM-DD format)
+| `size`			| Results size.
 
-# vi: tw=80
+<!-- vi: tw=80 -->
