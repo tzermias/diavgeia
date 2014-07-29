@@ -50,7 +50,8 @@ Diavgeia allows us to request an organization using its name as well.
 
 Allowed arguments for the spider are depicted on the following table:
 
-------------|---------------------------------
+|  Argument  | Description
+|------------|---------------------------------
 | `ada`			| Unique decision ID
 | `org`			| ID or latin name of organization
 | `subject`	| Subject of the decision
