@@ -16,6 +16,7 @@ class DiavgeiaItem(Item):
     thematicCategoryIds = Field()
     privateDate = Field()
     submissionTimestamp = Field()
+    publishTimestamp = Field()
     status = Field()
     versionId= Field()
     documentChecksum = Field()
