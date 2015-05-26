@@ -62,8 +62,19 @@ class DiavgeiaSpider(BaseSpider):
         for decision in decisions:
             d = DiavgeiaItem()
             for element in decision.select("*"):
-                #TODO: This handles only elements with no children
                 name = element.select("name(.)").extract()[0]
+                if len (element.select("*")) != 0:
+                    #Handle elements with children here
+                    print element
+                    d[name] = []
+                    for child in element.select("*"):
+                        #TODO: Add support for extraValues field
+                        ch = {}
+                        childname = child.select("name(.)").extract()[0]
+                        if len (child.select("./text()" )) != 0:
+                            chvalue = child.select("./text()").extract()[0]
+                            ch[childname]=chvalue
+                        d[name].append(ch)
                 if len (element.select("./text()" )) != 0:
                     value = element.select("./text()").extract()[0]
                     d[name] = value
