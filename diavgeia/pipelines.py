@@ -82,8 +82,11 @@ class DownloaderPipeline(object):
     def process_item(self, item, spider):
         """ Put each document URL to the Queue """
         self.spider = spider
-        log.msg("Downloading item %s" % item['ada'],level=log.DEBUG)
-        self.queue.put((item['ada'], item['documentUrl'], item['organizationId']))
+        if item.__class__.__name__ == "DiavgeiaItem":
+            # We are only interested in DiavgeiaItem in this pipeline
+            log.msg("Downloading item %s" % item['ada'],level=log.DEBUG)
+            self.queue.put((item['ada'], item['documentUrl'],
+                item['organizationId']))
 
         return item
 

@@ -1,4 +1,4 @@
-from diavgeia.items import DiavgeiaItem
+from diavgeia.items import *
 from scrapy.spider import BaseSpider
 from scrapy import log
 from scrapy.selector import XmlXPathSelector
@@ -49,6 +49,7 @@ class DiavgeiaSpider(BaseSpider):
                     date.today())
             self.start_urls = [ self.url % (0,)]
 
+
     def parse (self, response):
         xxs = XmlXPathSelector(response)
         xxs.register_namespace("xmlns", "http://diavgeia.gov.gr/schema/v2")
@@ -65,7 +66,6 @@ class DiavgeiaSpider(BaseSpider):
                 name = element.select("name(.)").extract()[0]
                 if len (element.select("*")) != 0:
                     #Handle elements with children here
-                    print element
                     d[name] = []
                     for child in element.select("*"):
                         #TODO: Add support for extraValues field
@@ -74,6 +74,17 @@ class DiavgeiaSpider(BaseSpider):
                         if len (child.select("./text()" )) != 0:
                             chvalue = child.select("./text()").extract()[0]
                             ch[childname]=chvalue
+                            # Get information about signers, units etc.
+                            if childname == "signerId":
+                                yield Request(self.base_url + \
+                                        "signers/%s" % (chvalue),
+                                        self.parseSigner)
+                            elif childname == "unitId":
+                                yield Request(self.base_url + \
+                                        "units/%s" % (chvalue),
+                                        self.parseUnit)
+
+
                         d[name].append(ch)
                 if len (element.select("./text()" )) != 0:
                     value = element.select("./text()").extract()[0]
@@ -86,6 +97,35 @@ class DiavgeiaSpider(BaseSpider):
         size = int(xxs.select("//xmlns:info/xmlns:size/text()").extract()[0])
         if (page*size <= total):
             yield Request(self.url % (page+1), self.parse)
+
+    def parseSigner(self, response):
+        """ Parse data for signer (first name, last name etc) """
+        xxs = XmlXPathSelector(response)
+        xxs.register_namespace("xmlns", "http://diavgeia.gov.gr/schema/v2")
+
+        signers = xxs.select("//xmlns:signer")
+        s = Signer()
+        for signer in signers.select("*"):
+            name = signer.select("name(.)").extract()[0]
+            if len (signer.select("./text()" )) != 0:
+                value = signer.select("./text()").extract()[0]
+                s[name] = value
+        yield s
+
+    def parseUnit(self, response):
+        xxs = XmlXPathSelector(response)
+        xxs.register_namespace("xmlns", "http://diavgeia.gov.gr/schema/v2")
+
+        units = xxs.select("//xmlns:unit/")
+        u = Unit()
+        for unit in units.select("*"):
+            name = units.select("name(.)").extract()[0]
+            print unit
+            if len (unit.select("./text()" )) != 0:
+                value = unit.select("./text()").extract()[0]
+                u[name] = value
+        yield u
+
 
         
 # vi: ts=4 sts=4 et sw=4 tw=80

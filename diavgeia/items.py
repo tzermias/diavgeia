@@ -28,5 +28,22 @@ class DiavgeiaItem(Item):
     documentUrl= Field()
     privateData = Field()
 
+class Signer(Item):
+    uid = Field()
+    firstName = Field()
+    lastName = Field()
+    active = Field()
+    activeFrom = Field()
+    activeUntil = Field()
+    organizationId = Field()
+    hasOrganizationSignRights = Field()
+
+class Unit(Item):
+    uid = Field()
+    label = Field()
+    category = Field()
+    active = Field()
+    activeFrom = Field()
+    parentId = Field()  
     
 # vi: ts=4 sts=4 et sw=4 tw=80
