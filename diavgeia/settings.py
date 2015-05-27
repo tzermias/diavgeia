@@ -12,7 +12,7 @@ BOT_VERSION = '1.0'
 SPIDER_MODULES = ['diavgeia.spiders']
 NEWSPIDER_MODULE = 'diavgeia.spiders'
 ITEM_PIPELINES = [ 
-    'diavgeia.pipelines.DownloaderPipeline' 
+#    'diavgeia.pipelines.DownloaderPipeline' 
 ]
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 

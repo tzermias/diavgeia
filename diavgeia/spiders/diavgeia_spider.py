@@ -79,12 +79,6 @@ class DiavgeiaSpider(BaseSpider):
                                 yield Request(self.base_url + \
                                         "signers/%s" % (chvalue),
                                         self.parseSigner)
-                            elif childname == "unitId":
-                                yield Request(self.base_url + \
-                                        "units/%s" % (chvalue),
-                                        self.parseUnit)
-
-
                         d[name].append(ch)
                 if len (element.select("./text()" )) != 0:
                     value = element.select("./text()").extract()[0]
@@ -111,21 +105,6 @@ class DiavgeiaSpider(BaseSpider):
                 value = signer.select("./text()").extract()[0]
                 s[name] = value
         yield s
-
-    def parseUnit(self, response):
-        xxs = XmlXPathSelector(response)
-        xxs.register_namespace("xmlns", "http://diavgeia.gov.gr/schema/v2")
-
-        units = xxs.select("//xmlns:unit/")
-        u = Unit()
-        for unit in units.select("*"):
-            name = units.select("name(.)").extract()[0]
-            print unit
-            if len (unit.select("./text()" )) != 0:
-                value = unit.select("./text()").extract()[0]
-                u[name] = value
-        yield u
-
 
         
 # vi: ts=4 sts=4 et sw=4 tw=80
