@@ -1,12 +1,11 @@
 from diavgeia.items import *
-from scrapy.spider import BaseSpider
-from scrapy import log
-from scrapy.selector import XmlXPathSelector
-from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy.spiders import Spider
+from scrapy.selector import Selector
+from scrapy.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.http.request import Request
 from datetime import date, timedelta
 
-class DiavgeiaSpider(BaseSpider):
+class DiavgeiaSpider(Spider):
     """ DiavgeiaSpider
     
     The class that performs the whole spider mechanism.
@@ -22,7 +21,7 @@ class DiavgeiaSpider(BaseSpider):
 
     def __init__(self , *args, **kwargs):
         super(DiavgeiaSpider, self).__init__(*args, **kwargs)
-        self.log("Initialized DiavgeiaSpider object", level=log.DEBUG)
+        self.logger.debug("Initialized DiavgeiaSpider object")
         # Parse arguments.
         # Currently legal arguments are ada, subject, protocol, term, unit,
         # signer, type, tag, from_date, to_date, from_issue_date, status and size
@@ -34,14 +33,13 @@ class DiavgeiaSpider(BaseSpider):
                 if key in self.allowed_arguments:
                     args_array.append("%s=%s" % (key, kwargs[key]))
                 else:
-                    self.log("Argument %s is not a valid argument" % key,
-                            level=log.WARNING) 
+                    self.logger.warning("Argument %s is not a valid argument" % key) 
             lala = "&".join(args_array) 
-            self.log("Arguments: %s" % lala, level=log.DEBUG)
+            self.logger.debug("Arguments: %s" % lala)
             self.url =self.base_url + "search?" + lala + "&page=%s"
             self.start_urls = [ self.url % (kwargs['page'] if 'page' in
                 kwargs.keys() else 0,)]
-            self.log("Request: %s" % self.start_urls[0], level=log.DEBUG)
+            self.logger.debug("Request: %s" % self.start_urls[0])
         else:
             from_date = (date.today() - timedelta(1))
             self.url = self.base_url + \
@@ -51,28 +49,28 @@ class DiavgeiaSpider(BaseSpider):
 
 
     def parse (self, response):
-        xxs = XmlXPathSelector(response)
+        xxs = Selector(response)
         xxs.register_namespace("xmlns", "http://diavgeia.gov.gr/schema/v2")
 
         # Parse Decision
-        decisions = xxs.select("//xmlns:decisions/xmlns:decision")
+        decisions = xxs.xpath("//xmlns:decisions/xmlns:decision")
 
         # Print debug the query field of the XML
-        query = xxs.select("//xmlns:info/xmlns:query/text()").extract()[0]
-        self.log("Query: %s" % query, level=log.DEBUG)
+        query = xxs.xpath("//xmlns:info/xmlns:query/text()").extract()[0]
+        self.logger.debug("Query: %s" % query)
         for decision in decisions:
             d = DiavgeiaItem()
-            for element in decision.select("*"):
-                name = element.select("name(.)").extract()[0]
-                if len (element.select("*")) != 0:
+            for element in decision.xpath("*"):
+                name = element.xpath("name(.)").extract()[0]
+                if len (element.xpath("*")) != 0:
                     #Handle elements with children here
                     d[name] = []
-                    for child in element.select("*"):
+                    for child in element.xpath("*"):
                         #TODO: Add support for extraValues field
                         ch = {}
-                        childname = child.select("name(.)").extract()[0]
-                        if len (child.select("./text()" )) != 0:
-                            chvalue = child.select("./text()").extract()[0]
+                        childname = child.xpath("name(.)").extract()[0]
+                        if len (child.xpath("./text()" )) != 0:
+                            chvalue = child.xpath("./text()").extract()[0]
                             ch[childname]=chvalue
                             # Get information about signers, units etc.
                             if childname == "signerId":
@@ -80,29 +78,29 @@ class DiavgeiaSpider(BaseSpider):
                                         "signers/%s" % (chvalue),
                                         self.parseSigner)
                         d[name].append(ch)
-                if len (element.select("./text()" )) != 0:
-                    value = element.select("./text()").extract()[0]
+                if len (element.xpath("./text()" )) != 0:
+                    value = element.xpath("./text()").extract()[0]
                     d[name] = value
             yield d
 
         # Get next page info
-        total = int(xxs.select("//xmlns:info/xmlns:total/text()").extract()[0])
-        page = int(xxs.select("//xmlns:info/xmlns:page/text()").extract()[0])
-        size = int(xxs.select("//xmlns:info/xmlns:size/text()").extract()[0])
+        total = int(xxs.xpath("//xmlns:info/xmlns:total/text()").extract()[0])
+        page = int(xxs.xpath("//xmlns:info/xmlns:page/text()").extract()[0])
+        size = int(xxs.xpath("//xmlns:info/xmlns:size/text()").extract()[0])
         if (page*size <= total):
             yield Request(self.url % (page+1), self.parse)
 
     def parseSigner(self, response):
         """ Parse data for signer (first name, last name etc) """
-        xxs = XmlXPathSelector(response)
+        xxs = Selector(response)
         xxs.register_namespace("xmlns", "http://diavgeia.gov.gr/schema/v2")
 
-        signers = xxs.select("//xmlns:signer")
+        signers = xxs.xpath("//xmlns:signer")
         s = Signer()
-        for signer in signers.select("*"):
-            name = signer.select("name(.)").extract()[0]
-            if len (signer.select("./text()" )) != 0:
-                value = signer.select("./text()").extract()[0]
+        for signer in signers.xpath("*"):
+            name = signer.xpath("name(.)").extract()[0]
+            if len (signer.xpath("./text()" )) != 0:
+                value = signer.xpath("./text()").extract()[0]
                 s[name] = value
         yield s
 

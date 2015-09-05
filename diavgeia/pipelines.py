@@ -3,11 +3,10 @@ from threading import Thread, RLock
 import urllib
 import os
 import subprocess
+import logging
 from time import sleep
-from scrapy import log
 from scrapy.xlib.pydispatch import dispatcher
 from scrapy import signals
-from scrapy.stats import stats
 import datetime, dateutil.parser
 
 class DownloaderPipeline(object):
@@ -15,15 +14,16 @@ class DownloaderPipeline(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        return cls(crawler.settings)
+        return cls(crawler.settings,crawler.stats)
 
-    def __init__(self, settings):
+    def __init__(self, settings, stats):
         """ Instantiate the Queue, Threads """
         self.queue = Queue()
         self.spider = ""
         self.lock = RLock()
         self.settings = settings
         self.stats = stats
+        self.logger = logging.getLogger(__name__)
         dispatcher.connect(self.spider_closed, signals.spider_closed)
 
         # Instantiate Threads
@@ -37,18 +37,18 @@ class DownloaderPipeline(object):
 
         # Check whether download dir exists.
         if not os.path.exists(self.settings['DOWNLOAD_DIR']):
-            log.msg("Directory %s does not exist." %\
-                self.settings['DOWNLOAD_DIR'], level=log.DEBUG)
+            self.logger.debug("Directory %s does not exist." %\
+                self.settings['DOWNLOAD_DIR'])
             os.mkdir(self.settings['DOWNLOAD_DIR'])
         else:
-            log.msg("Directory %s exists!" % self.settings['DOWNLOAD_DIR'],
-            level=log.DEBUG)
+            self.logger.debug("Directory %s exists!" %\
+                self.settings['DOWNLOAD_DIR'])
 
     def worker(self):
         """ Worker. Gets a URL from the Queue and tries to download it """
         while True:
             item = self.queue.get()
-            log.msg("Downloading %s ..." %item[0], level=log.DEBUG)
+            self.logger.debug("Downloading %s ..." %item[0])
             #Encode URL with percent encoding top avoid 
             url = urllib.quote(item[1].encode('utf-8')).replace("%3A", ':')
 
@@ -74,17 +74,16 @@ class DownloaderPipeline(object):
         # to finish and print a verbose message every 30 seconds with the
         # current queue size.
         while self.queue.unfinished_tasks > 0 :
-            log.msg("Queue has %s unfinished tasks! Waiting for them to finish..." % self.queue.unfinished_tasks,
-                    level=log.INFO )
+            self.logger.info("Queue has %s unfinished tasks! Waiting for them to finish..." % self.queue.unfinished_tasks)
             sleep(30)
-        log.msg("All tasks are finished", level=log.INFO)
+        self.logger.info("All tasks are finished")
 
     def process_item(self, item, spider):
         """ Put each document URL to the Queue """
         self.spider = spider
         if item.__class__.__name__ == "DiavgeiaItem":
             # We are only interested in DiavgeiaItem in this pipeline
-            log.msg("Downloading item %s" % item['ada'],level=log.DEBUG)
+            self.logger.debug("Downloading item %s" % item['ada'])
             self.queue.put((item['ada'], item['documentUrl'],
                 item['organizationId']))
 
