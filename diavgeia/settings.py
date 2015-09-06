@@ -10,7 +10,7 @@
 SPIDER_MODULES = ['diavgeia.spiders']
 NEWSPIDER_MODULE = 'diavgeia.spiders'
 ITEM_PIPELINES = { 
-    'diavgeia.pipelines.DownloaderPipeline': 100
+#    'diavgeia.pipelines.DownloaderPipeline': 100
 }
 
 # DownloaderPipeline settings
