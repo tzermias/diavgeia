@@ -1,5 +1,7 @@
 Diavgeia
 ========
+[![Build
+Status](https://travis-ci.org/tzermias/diavgeia.svg?branch=master)](https://travis-ci.org/tzermias/diavgeia)
 
 A crawler that leverages Diavgeia's [OpenDataAPI](https://diavgeia.gov.gr/api/help) 
 to download decisions as well as their respective metadata.
@@ -8,7 +10,7 @@ Prerequisites
 -------------
 
 - Python 2.7.x
-- Scrapy
+- Scrapy 1.0.3
 
 Introduction
 ------------

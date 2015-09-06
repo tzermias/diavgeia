@@ -12,7 +12,7 @@ NEWSPIDER_MODULE = 'diavgeia.spiders'
 ITEM_PIPELINES = { 
     'diavgeia.pipelines.DownloaderPipeline': 100
 }
-
+DOWNLOAD_HANDLERS = {'s3': None,}
 # DownloaderPipeline settings
 
 # Directory where Diavgeia PDFs are saved.

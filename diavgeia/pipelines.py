@@ -65,7 +65,7 @@ class DownloaderPipeline(object):
                     self.stats.inc_value('ThreadedDownloader/files_downloaded')
 
             except IOError as e:
-                log.err(e)
+                self.logger.error(e)
             finally:
                 self.queue.task_done()
 

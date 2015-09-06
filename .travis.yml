@@ -1,5 +1,5 @@
 language: python
 python:
   - "2.7"
-install: pip install scrapy py-dateutil
+install: pip -q install scrapy py-dateutil
 script: scrapy crawl diavgeia_spider --logfile=test && [[ $(grep -c 'log_count/ERROR' test) == 0 ]] && cat test && rm test
