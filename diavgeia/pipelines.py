@@ -23,7 +23,7 @@ class DownloaderPipeline(object):
         self.lock = RLock()
         self.settings = settings
         self.stats = stats
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
         dispatcher.connect(self.spider_closed, signals.spider_closed)
 
         # Instantiate Threads
@@ -83,9 +83,12 @@ class DownloaderPipeline(object):
         self.spider = spider
         if item.__class__.__name__ == "DiavgeiaItem":
             # We are only interested in DiavgeiaItem in this pipeline
-            self.logger.debug("Downloading item %s" % item['ada'])
-            self.queue.put((item['ada'], item['documentUrl'],
-                item['organizationId']))
+            if hasattr(item, 'documentUrl'):
+                self.logger.debug("Downloading item %s" % item['ada'])
+                self.queue.put((item['ada'], item['documentUrl'],
+                    item['organizationId']))
+            else:
+                self.logger.warning("Item %s has no document URL" % item['ada'])
 
         return item
 
